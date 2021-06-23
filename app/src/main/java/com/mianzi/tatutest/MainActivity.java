@@ -4,53 +4,60 @@ import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.mianzi.tatutest.adapters.CoursesAdapter;
+import com.mianzi.tatutest.entities.Course;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.View;
 
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
+    RecyclerView recyclerView;
+    CoursesAdapter coursesAdapter;
+    List<Course> courseList = new ArrayList<>();
+    RoomDb database;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        recyclerView = findViewById(R.id.courses_recycler);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+
+        database = RoomDb.getInstance(this);
+        initializeDBData();
+        courseList.addAll(database.courseDao().getAll());
+
+        recyclerView.setLayoutManager(linearLayoutManager);
+        coursesAdapter = new CoursesAdapter(this, courseList);
+        recyclerView.setAdapter(coursesAdapter);
+    }
+
+    public void initializeDBData(){
+        // only make this insert during app installation
+        Course course1 = new Course();
+        course1.setName("Sample course 1");
+        Course course2 = new Course();
+        course2.setName("Sample course 2");
+        database.courseDao().insert(course1);
+        database.courseDao().insert(course2);
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+    protected void onResume() {
+        super.onResume();
+        courseList.clear();
+        courseList.addAll(database.courseDao().getAll());
+        coursesAdapter.notifyDataSetChanged();
     }
 }
