@@ -6,6 +6,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.mianzi.tatutest.adapters.CoursesAdapter;
 import com.mianzi.tatutest.entities.Course;
+import com.mianzi.tatutest.entities.Topic;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -52,6 +53,12 @@ public class MainActivity extends AppCompatActivity {
             course2.setName("Sample course 2");
             database.courseDao().insert(course1);
             database.courseDao().insert(course2);
+
+            List<Course> courses = database.courseDao().getAll();
+            Topic topic1 = new Topic();
+            topic1.setTitle("Topic 1");
+            topic1.setCourseID(courses.get(0).getCourseID());
+            database.topicDao().insert(topic1);
         }
     }
 
