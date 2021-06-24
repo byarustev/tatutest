@@ -45,12 +45,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void initializeDBData(){
         // only make this insert during app installation
-        Course course1 = new Course();
-        course1.setName("Sample course 1");
-        Course course2 = new Course();
-        course2.setName("Sample course 2");
-        database.courseDao().insert(course1);
-        database.courseDao().insert(course2);
+        if(database.courseDao().getAll().size()<1){
+            Course course1 = new Course();
+            course1.setName("Sample course 1");
+            Course course2 = new Course();
+            course2.setName("Sample course 2");
+            database.courseDao().insert(course1);
+            database.courseDao().insert(course2);
+        }
     }
 
     @Override
